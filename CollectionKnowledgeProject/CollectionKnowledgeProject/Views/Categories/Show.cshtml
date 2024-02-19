@@ -1,0 +1,126 @@
+﻿@{
+    var category = ViewBag.Category as CollectionKnowledgeProject.Models.Category;
+    var questions = ViewBag.Questions as IEnumerable<CollectionKnowledgeProject.Models.Question>;
+    var searchString = ViewBag.SearchString;
+}
+
+<div>
+    <h2 style="margin-bottom: 20px;">Categoria: @category?.CategoryName</h2>
+
+    <form method="GET">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control"
+                   placeholder="Search topics or keywords" name="search"
+                   value="@ViewBag.SearchString">
+            <button class="btn btn-outline-success"
+                    type="submit">
+                Search
+            </button>
+        </div>
+    </form>
+     
+    <!-- Sort by Votes -->
+    <a asp-action="Show" asp-route-categoryId="@category.CategoryID" asp-route-sortBy="votes" asp-route-sortOrder="asc">Sort by Votes (Asc)</a>
+    <a asp-action="Show" asp-route-categoryId="@category.CategoryID" asp-route-sortBy="votes" asp-route-sortOrder="desc">Sort by Votes (Desc)</a>
+
+    <!-- Sort by Date -->
+    <a asp-action="Show" asp-route-categoryId="@category.CategoryID" asp-route-sortBy="createdAt" asp-route-sortOrder="asc">Sort by Date (Asc)</a>
+    <a asp-action="Show" asp-route-categoryId="@category.CategoryID" asp-route-sortBy="createdAt" asp-route-sortOrder="desc">Sort by Date (Desc)</a>
+
+
+    <div class="card">
+        <div class="card-body">
+            @foreach (var question in questions)
+            {
+                <div style="border: 2px black solid; border-radius: 4px; padding: 15px 20px 15px 20px;">
+                    <div style="display: flex; flex-direction: row; align-items: center; margin-bottom: 10px;">
+                        @if (question.User != null && !string.IsNullOrEmpty(question.User.ProfilePhotoPath))
+                        {
+                            <img src="@Url.Content(question.User.ProfilePhotoPath)" alt="Profile Photo" style="border-radius: 50%; width:80px; height: 80px;" />
+                        }
+                        else
+                        {
+                            <div style="width:80px; height: 80px; border-radius: 50%;border: 1px solid black;"></div>
+                        }
+                        <div style="display: flex; flex-direction: column; margin-left: 10px; margin-top: 2px;">
+                            <p>@question.User?.UserName</p>
+                            <p>@question.User?.FirstName @question.User?.LastName</p>
+                        </div>
+                    </div>
+                    <div style="margin-left: 5px;">
+                        <a style="font-size: 16px; font-weight: bold; text-decoration: none; color: black; font-weight: bold;" href="@Url.Action("Show", "Questions", new { id = question.QuestionID })">
+                            @question.Title
+                        </a>
+                        <p style="margin-top: 20px;">@question.Content</p>
+                        <p style="color: green;">Votes: @question.Votes</p>
+                    </div>
+                </div>
+                <br />
+            }
+        </div>
+    </div>
+
+    <div>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <li class="page-item">
+                    <a class="page-link"
+                       href="@ViewBag.PaginationBaseUrl=1" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                @for (int i = 1; i <= ViewBag.lastPage; i++)
+                {
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="@ViewBag.PaginationBaseUrl=@i">@(i)</a>
+                    </li>
+                }
+                <li class="page-item">
+                    <a class="page-link"
+                       href="@ViewBag.PaginationBaseUrl=@(ViewBag.lastPage)" aria-
+                       label="Next">
+
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+
+
+
+</div>
+<br />
+
+<div class="col-6 offset-3">
+
+    @using (Html.BeginForm(actionName: "Show", controllerName: "Categories",
+    method: FormMethod.Post))
+    {
+        @Html.Hidden("CategoryID", category.CategoryID)
+
+        @Html.Label("Title", "Titlu Intrebare")
+        <br />
+        @Html.TextArea("Title", null, new { @class = "form-control" })
+
+        @Html.ValidationMessage("Title", null, new { @class = "text-danger" })
+        <br />
+
+        <br />
+
+        @Html.Label("Content", "Continut Intrebare")
+        <br />
+        @Html.TextArea("Content", null, new { @class = "form-control" })
+
+        @Html.ValidationMessage("Content", null, new { @class = "text-danger" })
+        <br />
+
+        <br />
+
+        <button class="btn btn-success" type="submit">Adauga intrebare</button>
+
+    }
+
+</div>

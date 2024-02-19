@@ -1,0 +1,139 @@
+﻿@{
+    var question = ViewBag.Question as CollectionKnowledgeProject.Models.Question;
+    var categories = ViewBag.Categories as IEnumerable<CollectionKnowledgeProject.Models.Category>;
+    var comments = ViewBag.Comments as IEnumerable<CollectionKnowledgeProject.Models.Comment>;
+}
+
+    <div>
+        <div class="card">
+            <div class="card-body">
+
+                <div style="display:flex; flex-direction:column; justify-content: center; align-items: center;">
+
+                    <p class="h2" style="text-decoration:none;">
+
+                        Categoria: @question.Category?.CategoryName
+                    </p> 
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div>
+
+                            <form method="post" asp-action="ChangeCategory" asp-controller="Questions">
+                                <input type="hidden" name="questionId" value="@question.QuestionID" />
+                                <select name="categoryId">
+                                    @foreach (var category in categories)
+                                    {
+                                        <option value="@category.CategoryID">@category.CategoryName</option>
+                                    }
+                                </select>
+                                <button class="btn btn-danger" type="submit">Schimba categorie</button>
+                            </form>
+                        </div>
+                    }
+                </div>
+
+
+
+                <div style="border: 2px black solid; border-radius: 4px; padding: 15px 20px 15px 20px; margin-top: 10px;">
+                    <div style="display: flex; flex-direction: row; align-items: center; margin-bottom: 10px;">
+                        @if (question.User != null && !string.IsNullOrEmpty(question.User.ProfilePhotoPath))
+                        {
+                            <img src="@Url.Content(question.User.ProfilePhotoPath)" alt="Profile Photo" style="border-radius: 50%; width:80px; height: 80px;" />
+                        }
+                        else
+                        {
+                            <div style="width:80px; height: 80px; border-radius: 50%;border: 1px solid black;"></div>
+                        }
+                        <div style="display: flex; flex-direction: column; margin-left: 10px; margin-top: 2px;">
+                            <p>@question.User?.UserName</p>
+                            <p>@question.User?.FirstName @question.User?.LastName</p>
+                        </div>
+                    </div>
+                    <div style="margin-left: 5px;">
+                        <a style="font-size: 16px; font-weight: bold; text-decoration: none; color: black; font-weight: bold;" href="@Url.Action("Show", "Questions", new { id = question.QuestionID })">
+                            @question.Title
+                        </a>
+                        <p style="margin-top: 20px;">@question.Content</p>
+                        <p style="color: green;">Votes: @question.Votes</p>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <button onclick="voteQuestion(@question.QuestionID, 'up')">Upvote</button>
+                            <button onclick="voteQuestion(@question.QuestionID, 'down')">Downvote</button>
+                            <form id="voteForm_@question.QuestionID" asp-action="Vote" asp-controller="Questions" asp-route-questionId="@question.QuestionID" method="post">
+                                <input type="hidden" name="voteValue" id="voteValue_@question.QuestionID" />
+                            </form>
+                        }
+                    </div>
+                </div>
+                <br />
+            </div>
+        </div>
+
+        <h4>Comments:</h4>
+
+        <div style="display: flex; flex-direction: row;">
+            <div style="display: flex; flex-direction: column;">
+                <a asp-action="Show" asp-route-categoryId="@question.QuestionID" asp-route-sortBy="votes" asp-route-sortOrder="asc">Sorteaza crescator dupa voturi</a>
+                <a asp-action="Show" asp-route-categoryId="@question.QuestionID" asp-route-sortBy="votes" asp-route-sortOrder="desc">Sorteaza descrescator dupa voturi</a>
+            </div>
+            <div style="display: flex; flex-direction: column; margin-left: 10px;">
+                <a asp-action="Show" asp-route-categoryId="@question.QuestionID" asp-route-sortBy="createdAt" asp-route-sortOrder="asc">Sorteaza crescator dupa data</a>
+                <a asp-action="Show" asp-route-categoryId="@question.QuestionID" asp-route-sortBy="createdAt" asp-route-sortOrder="desc">Sorteaza descrescator dupa data</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                @foreach (var comment in comments)
+                {
+                    <div class="card">
+                        <div class="card-body">
+                            <div style="display: flex; flex-direction: column;">
+                                <p>@comment.Content</p>
+                                <p style="color: green;">Votes: @comment.Votes</p>
+                                <form method="post" action="/Comments/Delete/@comment.CommentID">
+
+                                <button class="btn btn-danger" type="submit">DELETE</button>
+                                <a href="/Comments/Edit/@comment.CommentID" class="btn btn-success">EDIT</a>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <br />
+
+<div class="col-6 offset-3">
+
+    @using (Html.BeginForm(actionName: "Show", controllerName: "Questions",
+    method: FormMethod.Post))
+    {
+        @Html.Hidden("QuestionId", question.QuestionID)
+
+        @Html.Label("Content", "Continut Comentariu")
+        <br />
+        @Html.TextArea("Content", null, new { @class = "form-control" })
+
+        @Html.ValidationMessage("Content", null, new { @class = "text-danger" })
+        <br />
+
+        <br />
+
+        <button class="btn btn-success" type="submit">Adauga comentariu</button>
+
+    }
+
+</div>
+
+    <button onclick="vote()">Click me!</button>
+
+<script>
+    function voteQuestion(questionId, voteType) {
+        var voteValue = (voteType === 'up') ? 1 : -1;
+        document.getElementById('voteValue_' + questionId).value = voteValue;
+        document.getElementById('voteForm_' + questionId).submit();
+    }
+</script>

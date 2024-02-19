@@ -1,0 +1,27 @@
+﻿@model CollectionKnowledgeProject.Models.Category
+
+@{
+}
+
+<h2>Editare categorie</h2>
+<br />
+
+
+@using (Html.BeginForm(controllerName: "Categories", actionName: "Edit",
+      method: FormMethod.Post, routeValues: new { id = Model.CategoryID }))
+
+{
+    @Html.Label("CategoryName", "Titlu Categorie")
+
+    <br />
+
+    @Html.Editor("CategoryName", new { @class = "form-control" })
+    <br />
+
+    @Html.ValidationMessage("CategoryName", null, new { @class = "text-danger" })
+    <br />
+
+    <button class="btn  btn-primary" type="submit">Editeaza intrebarea</button>
+
+}
+

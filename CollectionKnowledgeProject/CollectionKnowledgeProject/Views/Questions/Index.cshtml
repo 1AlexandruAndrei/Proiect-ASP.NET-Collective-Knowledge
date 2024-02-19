@@ -1,0 +1,60 @@
+﻿@{
+    var questions = ViewBag.Questions as IEnumerable<CollectionKnowledgeProject.Models.Question>;
+}
+
+@* Afisarea paginata a articolelor *@
+<div>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item">
+                <a class="page-link"
+                   href="/Questions/Index?page=1" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            @for (int i = 1; i <= ViewBag.lastPage; i++)
+            {
+                <li class="page-item">
+                    <a class="page-link"
+                       href="/Questions/Index?page=@i">@(i)</a>
+                </li>
+            }
+            <li class="page-item">
+                <a class="page-link"
+                   href="/Questions/Index?page=@(ViewBag.lastPage)" aria-
+                   label="Next">
+
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+@foreach (var question in questions)
+{
+    <div style="border: 2px black solid; border-radius: 4px; padding: 15px 20px 15px 20px;">
+        <div style="display: flex; flex-direction: row; align-items: center; margin-bottom: 10px;">
+            @if (question.User != null && !string.IsNullOrEmpty(question.User.ProfilePhotoPath))
+            {
+                <img src="@Url.Content(question.User.ProfilePhotoPath)" alt="Profile Photo" style="border-radius: 50%; width:80px; height: 80px;" />
+            }
+            else
+            {
+                <div style="width:80px; height: 80px; border-radius: 50%;border: 1px solid black;"></div>
+            }
+            <div style="display: flex; flex-direction: column; margin-left: 10px; margin-top: 2px;">
+                <p>@question.User?.UserName</p>
+                <p>@question.User?.FirstName @question.User?.LastName</p>
+            </div>
+        </div>
+        <div style="margin-left: 5px;">
+            <a style="font-size: 16px; font-weight: bold; text-decoration: none; color: black; font-weight: bold;" href="@Url.Action("Show", "Questions", new { id = question.QuestionID })">
+                @question.Title
+            </a>
+            <p style="margin-top: 20px;">@question.Content</p>
+            <p style="color: green;">Votes: @question.Votes</p>
+        </div>
+    </div>
+    <br />
+}

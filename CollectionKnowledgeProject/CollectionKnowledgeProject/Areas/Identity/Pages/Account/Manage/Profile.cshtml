@@ -1,0 +1,18 @@
+﻿@page
+@model IndexModel
+@{
+    var user = ViewBag.user as CollectionKnowledgeProject.Models.ApplicationUser;
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <p>Hello @User.Identity?.Name!</p>
+        <p>@user.FirstName</p>
+
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

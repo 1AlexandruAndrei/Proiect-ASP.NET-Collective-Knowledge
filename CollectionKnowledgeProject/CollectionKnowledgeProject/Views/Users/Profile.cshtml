@@ -1,0 +1,44 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var user = ViewBag.user as CollectionKnowledgeProject.Models.ApplicationUser;
+
+}
+
+    <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; margin-top: 120px;">
+        @if (user != null && !string.IsNullOrEmpty(user.ProfilePhotoPath))
+        {
+            <img src="@Url.Content(user.ProfilePhotoPath)" alt="Profile Photo" style="border-radius: 50%; width:380px; height: 380px; margin-right: 38px;" />
+        }
+        else
+        {
+            <div style="width: 380px; height: 380px; border-radius: 50%; margin-right: 38px; display: flex; justify-content: center; align-items: center; border: 1px solid black;">
+                <p>No profile photo available.</p>
+            </div>
+        }
+
+        <div>
+            <form enctype="multipart/form-data" asp-controller="Users" asp-action="Edit">
+
+                <label for="FirstName">First name:</label>
+                <input class="form-control" placeholder="@user.FirstName" type="text" name="FirstName" />
+                <br />
+
+                <label for="LastName">Last name:</label>
+                <input class="form-control" placeholder="@user.LastName" type="text" name="LastName" />
+                <br />
+
+                <label for="PhoneNumber">Phone number:</label>
+                <input class="form-control" placeholder="@user.PhoneNumber" type="text" name="PhoneNumber" />
+                <br />
+
+                <label for="ProfilePhoto">Profile photo:</label>
+                <input class="form-control" type="file" name="ProfilePhoto" />
+                <br />
+
+                <input class="btn btn-success" type="submit" value="Upload" />
+
+            </form>
+        </div>
+    </div>

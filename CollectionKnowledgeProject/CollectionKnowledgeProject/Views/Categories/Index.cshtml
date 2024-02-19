@@ -1,0 +1,92 @@
+﻿@{
+    var categories = ViewBag.Categories as IEnumerable<CollectionKnowledgeProject.Models.Category>;
+}
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <p class="alert alert-danger">@ViewBag.ErrorMessage</p>
+}
+
+<h2 style="margin-bottom: 20px;">Categorii de intrebari:</h2>
+
+<div class="card">
+    <div class="card-body">
+        @foreach (var category in categories)
+        {
+            <div class="card">
+                <div class="card-body">
+                    <a href="@Url.Action("Show", "Categories", new { id = category.CategoryID })" style="text-decoration: none; font-size: 22px;">
+                        @category.CategoryName
+                    </a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <form method="post" action="/Categories/Delete/@category.CategoryID">
+
+                            <button class="btn btn-danger" type="submit">DELETE</button>
+                            <a href="/Categories/Edit/@category.CategoryID" class="btn btn-success">EDIT</a>
+                        </form>
+                    }
+                </div>
+            </div>
+            <br />
+        }
+    </div>
+</div>
+
+
+@* Afisarea paginata a articolelor *@
+<div>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item">
+                <a class="page-link"
+                   href="/Categories/Index?page=1" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            @for (int i = 1; i <= ViewBag.lastPage; i++)
+            {
+                <li class="page-item">
+                    <a class="page-link"
+                       href="/Categories/Index?page=@i">@(i)</a>
+                </li>
+            }
+            <li class="page-item">
+                <a class="page-link"
+                   href="/Categories/Index?page=@(ViewBag.lastPage)" aria-
+                   label="Next">
+
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+@if (User.IsInRole("Admin"))
+{
+    <div class="col-6 offset-3">
+
+        @using (Html.BeginForm(actionName: "New", controllerName: "Categories",
+       method: FormMethod.Post))
+        {
+            @Html.Label("CategoryName", "Titlu Categorie")
+            <br />
+            @Html.TextArea("CategoryName", null, new { @class = "form-control" })
+
+            @Html.ValidationMessage("CategoryName", null, new { @class = "text-danger" })
+            <br />
+
+            <button class="btn btn-success" type="submit">Adauga intrebare</button>
+        }
+
+    </div>
+}
+
+
+
+
+
+
+
+
